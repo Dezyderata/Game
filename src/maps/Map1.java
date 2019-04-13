@@ -5,57 +5,39 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
 public class Map1 implements MapsInterface{
-	private Image background;
-	private SpriteSheet ground;
-	private SpriteSheet mountain1;
-	private SpriteSheet mountain2;
-	private SpriteSheet water;
-	private SpriteSheet groundBegin;
-	private SpriteSheet endGround;
+	private Image background = new Image("data/map/background.png");
+	//private Image ground = new Image("data/map/midle.png");
+	//private SpriteSheet water;
+	//private Image groundBegin = new Image("data/map/left.png");
+	//private Image groundEnd = new Image("data/map/right.png");
 	public Map1() throws SlickException {
-		this.background = new Image("data/background.png");
 	}
+	
+	@Override
 	public Image getBackground() {
-		return background;
+		return this.background;
 	}
-	public void setBackground(Image background) {
-		this.background = background;
-	}
-	public SpriteSheet getGround() {
+	
+	
+	
+	
+	/*public Image getGround() {
 		return ground;
 	}
-	public void setGround(SpriteSheet ground) {
-		this.ground = ground;
-	}
-	public SpriteSheet getMountain1() {
-		return mountain1;
-	}
-	public void setMountain1(SpriteSheet mountain1) {
-		this.mountain1 = mountain1;
-	}
-	public SpriteSheet getMountain2() {
-		return mountain2;
-	}
-	public void setMountain2(SpriteSheet mountain2) {
-		this.mountain2 = mountain2;
-	}
+
 	public SpriteSheet getWater() {
 		return water;
 	}
-	public void setWater(SpriteSheet water) {
-		this.water = water;
-	}
-	public SpriteSheet getGroundBegin() {
+
+	public Image getGroundBegin() {
 		return groundBegin;
 	}
-	public void setGroundBegin(SpriteSheet groundBegin) {
-		this.groundBegin = groundBegin;
-	}
-	public SpriteSheet getEndGround() {
-		return endGround;
-	}
-	public void setEndGround(SpriteSheet endGround) {
-		this.endGround = endGround;
-	}
 
+	public Image getGroundEnd() {
+		return groundEnd;
+	}
+	
+	
+	*/
+	
 }

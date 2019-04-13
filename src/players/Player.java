@@ -12,79 +12,95 @@ public class Player implements PlayersInterface {
 	private static final int gravity = -2;
 	private Vector<Integer> velocity = new Vector<>();
 	private int posX = 100;
-	private int posY = 700;
+	private int posY = 685;
 	private int prevDelta;
 	private double deltaT = 0.15;
-	private Animation idleAnimation;
-	private Animation walkAnimation;
-	private Animation walkLeftAnimation;
-	private Animation jumpAnimation;
+	private Animation idleAnimation = new Animation(new SpriteSheet("data/player1/IDLE.png", 200,217), 100);
+	private Animation walkAnimation = new Animation(new SpriteSheet("data/player1/WALK.png", 200,238), 100);
+	private Animation walkLeftAnimation = new Animation(new SpriteSheet("data/player1/WALK_L.png", 200,238), 100);
+	private Animation jumpAnimation = new Animation(new SpriteSheet("data/player1/JUMP.png", 200,248), 100);
 	private Animation fire;
+	private Animation currentAnimation;
+	
 	public Player() throws SlickException {
-		this.idleAnimation = new Animation(new SpriteSheet("data/player1/IDLE.png", 200,217), 100);
-		//this.idleAnimation.setPingPong(true);
-		this.walkAnimation = new Animation(new SpriteSheet("data/player1/WALK.png", 200,238), 100);
-		//this.walkAnimation.setPingPong(true);
-		this.walkLeftAnimation = new Animation(new SpriteSheet("data/player1/WALK_L.png", 200,238), 100);
-		//this.walkLeftAnimation.setPingPong(true);
-		this.jumpAnimation = new Animation(new SpriteSheet("data/player1/JUMP.png", 200,248), 100);
-		//this.jumpAnimation.setPingPong(true);
+		this.currentAnimation = this.idleAnimation;
 		this.velocity.add(0);
 		this.velocity.add(0);
 	}
-	public void butonPresedReaction(int key, int delta) {
+	@Override
+	public void buttonPresedReaction(int key, int delta) {
+		System.out.print("x pos = "+posX+ " Y pose "+posY);
         switch (key) {
         	case 1:
         		this.fire(delta);
         		break;
         	case 200:
-        		this.jump(delta);	
+        		this.jump(delta);
+        		break;
+        	case 205:
+        		this.moveRight(delta);
+        		break;
+        	case 203:
+        		this.moveLeft(delta);
         		break;
         }
 	}
+	@Override
 	public void buttonReliceReaction(int key) {
+		this.currentAnimation = this.idleAnimation;
 		this.backToIdle();
 	}
 	private void countDeltaT(int delta) {
 		if((this.deltaT = delta - this.prevDelta)>0.15) {
+			System.out.print("delta w p: "+ deltaT);
 			this.deltaT = 0.15;
 		}
+		System.out.println("nowa delta: "+deltaT);
 	}
 	private void setNewPosition() {
 		this.posX = (int) (this.posX + this.deltaT * this.velocity.get(0));
 		this.posY = (int) (this.posY + this.deltaT * this.velocity.get(1));
+		System.out.print("x pos = "+posX+ " Y pose "+posY);
 		this.velocity.setElementAt((int) (this.velocity.elementAt(1)+gravity*this.deltaT), 1);
 	}
-	
+	private void jump(int delta) {
+		this.currentAnimation = this.jumpAnimation;
+		//Dane na start
+		if((int)velocity.elementAt(1) == 0) {
+			this.prevDelta = delta-1;
+			velocity.setElementAt(-20, 1);
+			System.out.print("x pos = "+posX+ " Y pose "+posY);
+		}
+		this.countDeltaT(delta);
+		this.setNewPosition();
+	}
+	private void backToIdle() {
+		this.velocity.setElementAt(0, 0);
+		this.velocity.setElementAt(0, 1);
+	}
 	@Override
 	public void moveRight(int delta) {
+		this.currentAnimation = this.walkAnimation;
+		if((int)velocity.elementAt(0) == 0) {
+			this.prevDelta = delta-1;
+		}
 		velocity.setElementAt(40, 0);
 		this.countDeltaT(delta);
 		this.setNewPosition();
 	}
 	@Override
 	public void moveLeft(int delta) {
+		this.currentAnimation = this.walkLeftAnimation;
+		if((int)velocity.elementAt(0) == 0) {
+			this.prevDelta = delta-1;
+		}
 		velocity.setElementAt(-40, 0);
 		this.countDeltaT(delta);
 		this.setNewPosition();
 	}
-	@Override
-	public void jump(int delta) {
-		if(velocity.elementAt(1).equals(0)) {
-			velocity.setElementAt(-20, 1);
-		}
-		this.countDeltaT(delta);
-		this.setNewPosition();
-	}
-	@Override
-	public void fire(int delta) {
+	private void fire(int delta) {
 		// TODO Auto-generated method stub
 		
-	}
-	@Override
-	public void backToIdle() {
-		this.velocity.setElementAt(0, 0);
-		this.velocity.setElementAt(0, 1);
 	}
 	@Override
 	public int getPosX() {
@@ -96,19 +112,7 @@ public class Player implements PlayersInterface {
 		return this.posY;
 	}
 	@Override
-	public Animation getJump() {
-		return this.jumpAnimation;
-	}
-	@Override
-	public Animation getIdle() {
-		return this.idleAnimation;
-	}
-	@Override
-	public Animation getWalk() {
-		return this.walkAnimation;
-	}
-	@Override
-	public Animation getWalkLeft() {
-		return this.walkLeftAnimation;
+	public Animation getCurrentAnimation() {
+		return this.currentAnimation;
 	}
 }
