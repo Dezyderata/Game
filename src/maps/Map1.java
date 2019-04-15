@@ -6,10 +6,8 @@ import org.newdawn.slick.SpriteSheet;
 
 public class Map1 implements MapsInterface{
 	private Image background = new Image("data/map/background.png");
-	//private Image ground = new Image("data/map/midle.png");
-	//private SpriteSheet water;
-	//private Image groundBegin = new Image("data/map/left.png");
-	//private Image groundEnd = new Image("data/map/right.png");
+	private SpriteSheet ground = new SpriteSheet("data/map/03.png",100, 100);
+	private Image map;
 	public Map1() throws SlickException {
 	}
 	
@@ -17,6 +15,10 @@ public class Map1 implements MapsInterface{
 	public Image getBackground() {
 		return this.background;
 	}
+	public SpriteSheet getGround() {
+		return this.ground;
+	}
+	
 	
 	
 	
