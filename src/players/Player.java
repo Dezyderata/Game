@@ -3,10 +3,10 @@ package players;
 import java.util.Vector;
 
 import org.newdawn.slick.Animation;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.geom.Circle;
 
 public class Player implements PlayersInterface {
 	private static final int gravity = -2;
@@ -21,12 +21,22 @@ public class Player implements PlayersInterface {
 	private Animation jumpAnimation = new Animation(new SpriteSheet("data/player1/JUMP.png", 200,248), 100);
 	private Animation fire;
 	private Animation currentAnimation;
+	private Shape right;
+	private Shape left;
+	private Shape up;
+	private Shape down;
+	
 	
 	public Player() throws SlickException {
 		this.currentAnimation = this.idleAnimation;
 		this.velocity.add(0);
 		this.velocity.add(0);
+		this.right = new Circle((this.posX + 100), (this.posY + 80), 50, 50);
+		this.left = new Circle(this.posX, (this.posY + 80), 50, 50);
+		this.up = new Circle((this.posX + 50), this.posY, 50, 50);
+		this.down = new Circle((this.posX + 50), (this.posY + 113), 50, 50);
 	}
+	
 	@Override
 	public void buttonPresedReaction(int key, int delta) {
 		System.out.print("x pos = "+posX+ " Y pose "+posY);
@@ -60,6 +70,10 @@ public class Player implements PlayersInterface {
 	private void setNewPosition() {
 		this.posX = (int) (this.posX + this.deltaT * this.velocity.get(0));
 		this.posY = (int) (this.posY + this.deltaT * this.velocity.get(1));
+		this.right.setLocation((this.posX + 100), (this.posY + 80));
+		this.left.setLocation(this.posX, (this.posY + 80));
+		this.up.setLocation((this.posX + 50), this.posY);
+		this.down.setLocation((this.posX + 50), (this.posY + 113));
 		System.out.print("x pos = "+posX+ " Y pose "+posY);
 		this.velocity.setElementAt((int) (this.velocity.elementAt(1)+gravity*this.deltaT), 1);
 	}
@@ -114,5 +128,25 @@ public class Player implements PlayersInterface {
 	@Override
 	public Animation getCurrentAnimation() {
 		return this.currentAnimation;
+	}
+
+	@Override
+	public Shape getRight() {
+		return right;
+	}
+
+	@Override
+	public Shape getLeft() {
+		return this.left;
+	}
+
+	@Override
+	public Shape getUp() {
+		return this.up;
+	}
+
+	@Override
+	public Shape getDown() {
+		return this.down;
 	}
 }

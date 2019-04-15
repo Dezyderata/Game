@@ -1,6 +1,7 @@
 package game;
 
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -22,9 +23,10 @@ public class Game extends BasicGame {
 	private MapsInterface map;
 	private PlayersInterface player;
 	private int delta;
-	private SpriteSheet tileSet;
-	private Shape circle;
-	private Shape rectangle;
+	private Shape rectangle1;
+	private Shape rectangle2;
+	private Shape rectangle3;
+	private Shape rectangle4;
 	private boolean collision;
 	
 	
@@ -37,45 +39,38 @@ public class Game extends BasicGame {
 	public void init(GameContainer container) throws SlickException {
 		map = new Map1();
 		player = new Player();
-		tileSet = map.getGround();
-		circle = new Circle(player.getPosX(), player.getPosY(), 100, 100);
-		rectangle = new Rectangle(600, 800, 900, 200);
-		
-
-
+		rectangle1 = new Rectangle(0, 900, 1900, 100);
+		rectangle2  = new Rectangle(600, 800, 700, 200);
+		rectangle3  = new Rectangle(800, 500, 400, 100);
+		rectangle4  = new Rectangle(1300, 400, 700, 100);
 	}
 	
 	@Override
 	public void render(GameContainer container, Graphics graphic) throws SlickException {
 		map.getBackground().draw();
 		player.getCurrentAnimation().draw(player.getPosX(), player.getPosY());
-		tileSet.startUse();
-		for(int i = 0; i < 19; i++) {
-			if(i < 6 || i > 15) {
-				tileSet.getSubImage(5, 0).drawEmbedded(100*i, 900, 100, 100);
-			}else {
-				if(i >= 6 && i <= 15) {
-					tileSet.getSubImage(1, 0).drawEmbedded(100*i, 900, 100, 100);
-					tileSet.getSubImage(5, 0).drawEmbedded(100*i, 800, 100, 100);
-				}
-			}
-		}
-		tileSet.endUse();
+		map.getGround();
+		
+		//graphic.fill(rectangle1);
+		graphic.setColor(Color.blue);
+		//graphic.fill(rectangle2);
+		graphic.setColor(Color.orange);
+		graphic.fill(rectangle3);
+		graphic.setColor(Color.green);
+		//graphic.fill(rectangle4);
+		graphic.setColor(Color.white);
+		
 	}
 
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
 		Input input = container.getInput();
-		circle.setCenterX((float)(player.getPosX())+100);
-		circle.setCenterY((float)player.getPosY()+100);
 		
 		player.getCurrentAnimation().draw(player.getPosX(), player.getPosY());
-		if(input.isKeyDown(Input.KEY_RIGHT) && collision == false) {player.moveRight(delta);}
-		else if(input.isKeyDown(Input.KEY_LEFT) && collision == false) {player.moveLeft(delta);}
+		if(input.isKeyDown(Input.KEY_RIGHT) && !player.getRight().intersects(rectangle2)) {player.moveRight(delta);}
+		else if(input.isKeyDown(Input.KEY_LEFT) && !player.getLeft().intersects(rectangle2)) {player.moveLeft(delta);}
 		
-		collision = circle.intersects(rectangle);
 		if(collision) {
-		//	player.stop();
 			System.out.println("Collision at x: " +player.getPosX()+" y: "+player.getPosY());
 		}
 	}
