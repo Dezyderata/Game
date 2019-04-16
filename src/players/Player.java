@@ -25,6 +25,7 @@ public class Player implements PlayersInterface {
 	private Shape left;
 	private Shape up;
 	private Shape down;
+	private boolean jumping;
 	
 	
 	public Player() throws SlickException {
@@ -38,22 +39,52 @@ public class Player implements PlayersInterface {
 	}
 	
 	@Override
-	public void buttonPresedReaction(int key, int delta) {
+	public void buttonPresedReaction(int key, int delta, int code) {
 		System.out.print("x pos = "+posX+ " Y pose "+posY);
-        switch (key) {
-        	case 1:
-        		this.fire(delta);
-        		break;
-        	case 200:
-        		this.jump(delta);
-        		break;
-        	case 205:
-        		this.moveRight(delta);
-        		break;
-        	case 203:
-        		this.moveLeft(delta);
-        		break;
-        }
+		if(code == 0) {
+			switch (key) {
+	    	case 1:
+	    		this.fire(delta);
+	    		break;
+	    	case 200:
+	    		this.jump(delta);
+	    		this.jumping = true;
+	    		break;
+	    	case 205:
+	    		this.moveRight(delta);
+	    		break;
+	    	case 203:
+	    		this.moveLeft(delta);
+	    		break;
+			}
+	    }else {
+				
+	        switch (key) {
+	        	case 1:
+	        		this.fire(delta);
+	        		break;
+	        	case 200:
+	        		if(code == 4) {
+	        			this.velocity.setElementAt(0, 1);
+	        			this.jumping = false;
+	        			break;
+	        		}
+	        		if(code == 3) {
+	        			this.velocity.setElementAt(-1, 1);
+	        			break;
+	        		}
+	        	case 205:
+	        		if(code == 1) {
+	        			this.velocity.setElementAt(-1, 0);
+	        			break;
+	        		}
+	        	case 203:
+	        		if(code == 2) {
+	        			this.velocity.setElementAt(1, 0);
+	        			break;
+	        		}
+	        }
+	    }	
 	}
 	@Override
 	public void buttonReliceReaction(int key) {
@@ -148,5 +179,10 @@ public class Player implements PlayersInterface {
 	@Override
 	public Shape getDown() {
 		return this.down;
+	}
+
+	@Override
+	public boolean isJumping() {
+		return this.jumping;
 	}
 }
