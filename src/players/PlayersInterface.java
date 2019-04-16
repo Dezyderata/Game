@@ -10,10 +10,8 @@ public interface PlayersInterface {
 	public int getPosX();
 	public int getPosY();
 	public void buttonPresedReaction(int key, int delta, int code);
-	public void buttonReliceReaction(int key);
-	public Shape getRight();
-	public Shape getLeft();
-	public Shape getUp();
-	public Shape getDown();
+	public void buttonReliceReaction(int key, int delta, int code);
+	public Shape collisionArea(int i);
 	public boolean isJumping();
+	public void jump(int delta, int code);
 }

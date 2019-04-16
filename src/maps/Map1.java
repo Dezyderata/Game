@@ -15,11 +15,9 @@ public class Map1 implements MapsInterface{
 	private List<Rectangle> collisionsAreasMap1 =  new ArrayList<>();
 	public Map1() throws SlickException {
 	}
-	
 	@Override
 	public Image getBackground() {
-		return this.background;
-		
+		return this.background;	
 	}
 	private List<Rectangle> getMap1() {
 		collisionsAreasMap1.add(new Rectangle(0, 900, 1900, 100));

@@ -1,41 +1,34 @@
 package players;
 
-import java.util.Vector;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.geom.Shape;
-import org.newdawn.slick.geom.Circle;
 
 public class Player implements PlayersInterface {
-	private static final int gravity = -2;
-	private Vector<Integer> velocity = new Vector<>();
+	private final List<String> listOfAnimationPaths = Arrays.asList("data/player1/IDLE.png", "data/player1/WALK.png", "data/player1/WALK_L.png", "data/player1/JUMP.png", "data/player1/jumpR.png", "data/player1/jumpL.png");
+	private final int[] spritSheetsSize = {200,217, 200,238, 200,238, 200,248};
+	static final int gravity = -2;
+	private PlayerGraphics playerGraphics;
+	private PlayerCollisionAreas collisionAreas;
+	private Animation currentAnimation;
+	private List<Double> velocity = new ArrayList<>();
 	private int posX = 100;
 	private int posY = 685;
-	private int prevDelta;
+	private double prevDelta;
 	private double deltaT = 0.15;
-	private Animation idleAnimation = new Animation(new SpriteSheet("data/player1/IDLE.png", 200,217), 100);
-	private Animation walkAnimation = new Animation(new SpriteSheet("data/player1/WALK.png", 200,238), 100);
-	private Animation walkLeftAnimation = new Animation(new SpriteSheet("data/player1/WALK_L.png", 200,238), 100);
-	private Animation jumpAnimation = new Animation(new SpriteSheet("data/player1/JUMP.png", 200,248), 100);
-	private Animation fire;
-	private Animation currentAnimation;
-	private Shape right;
-	private Shape left;
-	private Shape up;
-	private Shape down;
 	private boolean jumping;
+	private boolean button = false;
 	
 	
 	public Player() throws SlickException {
-		this.currentAnimation = this.idleAnimation;
-		this.velocity.add(0);
-		this.velocity.add(0);
-		this.right = new Circle((this.posX + 100), (this.posY + 80), 50, 50);
-		this.left = new Circle(this.posX, (this.posY + 80), 50, 50);
-		this.up = new Circle((this.posX + 50), this.posY, 50, 50);
-		this.down = new Circle((this.posX + 50), (this.posY + 113), 50, 50);
+		this.playerGraphics = new PlayerGraphics(spritSheetsSize, listOfAnimationPaths);
+		this.currentAnimation = this.playerGraphics.getIdleAnimation();
+		this.velocity.add(0.0);
+		this.velocity.add(0.0);
+		this.collisionAreas = new PlayerCollisionAreas(this.posX, this.posY);
 	}
 	
 	@Override
@@ -47,7 +40,8 @@ public class Player implements PlayersInterface {
 	    		this.fire(delta);
 	    		break;
 	    	case 200:
-	    		this.jump(delta);
+	    		this.button = true;
+	    		this.jump(delta, code);
 	    		this.jumping = true;
 	    		break;
 	    	case 205:
@@ -65,31 +59,35 @@ public class Player implements PlayersInterface {
 	        		break;
 	        	case 200:
 	        		if(code == 4) {
-	        			this.velocity.setElementAt(0, 1);
+	        			this.velocity.set(1, 0.0);
 	        			this.jumping = false;
 	        			break;
 	        		}
 	        		if(code == 3) {
-	        			this.velocity.setElementAt(-1, 1);
+	        			this.velocity.set(1,-0.1);
 	        			break;
 	        		}
 	        	case 205:
 	        		if(code == 1) {
-	        			this.velocity.setElementAt(-1, 0);
+	        			this.velocity.set(0,-0.1);
 	        			break;
 	        		}
 	        	case 203:
 	        		if(code == 2) {
-	        			this.velocity.setElementAt(1, 0);
+	        			this.velocity.set(0, 0.1);
 	        			break;
 	        		}
 	        }
 	    }	
 	}
 	@Override
-	public void buttonReliceReaction(int key) {
-		this.currentAnimation = this.idleAnimation;
-		this.backToIdle();
+	public void buttonReliceReaction(int key, int delta, int code) {
+		if(!this.jumping || code == 4) {
+			this.currentAnimation = this.playerGraphics.getIdleAnimation();
+			this.backToIdle();
+		}else {
+			this.jump(delta, code);
+		}
 	}
 	private void countDeltaT(int delta) {
 		if((this.deltaT = delta - this.prevDelta)>0.15) {
@@ -100,46 +98,60 @@ public class Player implements PlayersInterface {
 	}
 	private void setNewPosition() {
 		this.posX = (int) (this.posX + this.deltaT * this.velocity.get(0));
-		this.posY = (int) (this.posY + this.deltaT * this.velocity.get(1));
-		this.right.setLocation((this.posX + 100), (this.posY + 80));
-		this.left.setLocation(this.posX, (this.posY + 80));
-		this.up.setLocation((this.posX + 50), this.posY);
-		this.down.setLocation((this.posX + 50), (this.posY + 113));
-		System.out.print("x pos = "+posX+ " Y pose "+posY);
-		this.velocity.setElementAt((int) (this.velocity.elementAt(1)+gravity*this.deltaT), 1);
-	}
-	private void jump(int delta) {
-		this.currentAnimation = this.jumpAnimation;
-		//Dane na start
-		if((int)velocity.elementAt(1) == 0) {
-			this.prevDelta = delta-1;
-			velocity.setElementAt(-20, 1);
-			System.out.print("x pos = "+posX+ " Y pose "+posY);
+		if(jumping) {
+			this.posY = (int) (this.posY + this.deltaT * this.velocity.get(1));
+			this.velocity.set(1, (this.velocity.get(1) - gravity*this.deltaT));
 		}
-		this.countDeltaT(delta);
-		this.setNewPosition();
+		System.out.println("positions:" +this.posX+" y: "+this.posY);
+		this.collisionAreas.setPlayerCollisionAreas(this.posX, this.posY);		
+		System.out.println("speed at x: "+velocity.get(0)+ " at y: " +velocity.get(1)+ "grav*delta: " +(gravity*this.deltaT));
+	}
+	@Override
+	public void jump(int delta, int code) {
+		if(code == 4) {
+			System.out.println("kod 4");
+			jumping = false;
+			this.posY = this.posY -10;
+			this.backToIdle();
+		}else {
+			//Dane na start
+			if(velocity.get(1).equals(0.0) && this.button == true) {
+				this.currentAnimation = this.playerGraphics.getJumpAnimation();
+				this.prevDelta = delta-1;
+				velocity.set(1, -30.0);
+				System.out.print("x pos = "+posX+ " Y pose "+posY);
+				button = false;
+			}else if(velocity.get(0) < 0.0){
+				this.currentAnimation = this.playerGraphics.getJumpingLeft();
+			}else {
+				this.currentAnimation = this.playerGraphics.getJumpingRight();
+			}
+			this.countDeltaT(delta);
+			this.setNewPosition();
+		}
 	}
 	private void backToIdle() {
-		this.velocity.setElementAt(0, 0);
-		this.velocity.setElementAt(0, 1);
+		this.currentAnimation = this.playerGraphics.getIdleAnimation();
+		this.velocity.set(0, 0.0);
+		this.velocity.set(1, 0.0);
 	}
 	@Override
 	public void moveRight(int delta) {
-		this.currentAnimation = this.walkAnimation;
-		if((int)velocity.elementAt(0) == 0) {
+		this.currentAnimation = this.playerGraphics.getWalkAnimation();
+		if(velocity.get(0).equals(0.0)) {
 			this.prevDelta = delta-1;
 		}
-		velocity.setElementAt(40, 0);
+		velocity.set(0, 40.0);
 		this.countDeltaT(delta);
 		this.setNewPosition();
 	}
 	@Override
 	public void moveLeft(int delta) {
-		this.currentAnimation = this.walkLeftAnimation;
-		if((int)velocity.elementAt(0) == 0) {
+		this.currentAnimation = this.playerGraphics.getWalkLeftAnimation();
+		if(velocity.get(0).equals(0.0)) {
 			this.prevDelta = delta-1;
 		}
-		velocity.setElementAt(-40, 0);
+		velocity.set(0, -40.0);
 		this.countDeltaT(delta);
 		this.setNewPosition();
 	}
@@ -162,27 +174,27 @@ public class Player implements PlayersInterface {
 	}
 
 	@Override
-	public Shape getRight() {
-		return right;
-	}
-
-	@Override
-	public Shape getLeft() {
-		return this.left;
-	}
-
-	@Override
-	public Shape getUp() {
-		return this.up;
-	}
-
-	@Override
-	public Shape getDown() {
-		return this.down;
-	}
-
-	@Override
 	public boolean isJumping() {
 		return this.jumping;
+	}
+
+	@Override
+	public Shape collisionArea(int i) {
+		Shape ret = null;
+		switch(i){
+			case 1:
+				ret = this.collisionAreas.getUp();
+				break;
+			case 2:
+				ret = this.collisionAreas.getRight();
+				break;
+			case 3:
+				ret = this.collisionAreas.getDown();
+				break;
+			case 4:
+				ret = this.collisionAreas.getLeft();
+				break;
+		}
+		return ret;
 	}
 }

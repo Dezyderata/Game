@@ -39,18 +39,22 @@ public class Game extends BasicGame {
 	@Override
 	public void render(GameContainer container, Graphics graphic) throws SlickException {
 		map.getBackground().draw();
-		player.getCurrentAnimation().draw(player.getPosX(), player.getPosY());
 		map.getGround();
+		player.getCurrentAnimation().draw(player.getPosX(), player.getPosY());
+
 	}
 
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
 		Input input = container.getInput();
 		code = checkCollision(this.player, this.listOfObstacles);
-		player.getCurrentAnimation().draw(player.getPosX(), player.getPosY());
+		if(player.isJumping()) {
+			player.jump(delta, code);
+		}
+		//player.getCurrentAnimation().draw(player.getPosX(), player.getPosY());
 		if(input.isKeyDown(Input.KEY_RIGHT) && code!=1) {player.moveRight(delta);}
 		else if(input.isKeyDown(Input.KEY_LEFT) && code!=2) {player.moveLeft(delta);}
-		
+
 		if(collision) {
 			System.out.println("Collision at x: " +player.getPosX()+" y: "+player.getPosY());
 		}
@@ -65,15 +69,15 @@ public class Game extends BasicGame {
     @Override
     public void keyReleased(int key, char c) {
     	System.out.print("key "+key+" reliest" + c);
-    	player.buttonReliceReaction(key);
+    	player.buttonReliceReaction(key, delta, code);
     }
     private int checkCollision(PlayersInterface player, List<Rectangle> listOfObstacles) {
     	int code = 0;
     	for(Rectangle r : listOfObstacles) {
-    		if(player.getRight().intersects(r)){code = 1; break;}
-    		else if(player.getLeft().intersects(r)){code = 2; break;}
-    		else if(player.getUp().intersects(r)){code = 3; break;}
-    		else if(player.getDown().intersects(r)){code = 4; break;}
+    		if(player.collisionArea(2).intersects(r)){code = 1; break;}
+    		else if(player.collisionArea(4).intersects(r)){code = 2; break;}
+    		else if(player.collisionArea(1).intersects(r)){code = 3; break;}
+    		else if(player.collisionArea(3).intersects(r)){code = 4; break;}
     	}
     	return code;
     }
