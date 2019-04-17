@@ -45,8 +45,6 @@ public class Player implements PlayersInterface {
 		    		this.moveLeft();
 		    		break;
 				}
-	    }else if(listOfCollisions.get(0)){
-
 	    }else {	
 	        switch (key) {
 	        	case 200:
@@ -87,34 +85,34 @@ public class Player implements PlayersInterface {
 	}
 	@Override
 	public void fall() {
-		this.velocity.set(1, 30.0);
+		this.velocity.set(1, 20.0);
 		fall = true;
 		this.setNewPosition();
 	}
 	@Override
 	public void jump(List<Boolean> listOfCollisions) {
 		if(listOfCollisions.get(3)) {
-			//landed
 			jumping = false;
 			fall = false;
-			this.posY = this.posY - 8;
+			this.posY = (int)this.collisionAreas.getListOfCollision().get(0).getY()-210;
+			this.collisionAreas.setPlayerCollisionAreas(this.posX, this.posY);
 			this.backToIdle();
 		}else {
 			if(velocity.get(1).equals(0.0) && this.button == true) {
 				this.currentAnimation = this.playerGraphics.getJumpAnimation();
 				velocity.set(1, -60.0);
 				button = false;
+			}else if(listOfCollisions.get(1)){
+				velocity.set(1, 20.0);
 			}else if(velocity.get(0) < 0.0){
 				this.currentAnimation = this.playerGraphics.getJumpingLeft();
 				if(listOfCollisions.get(4)) {
-					velocity.set(0, 0.0);
-					this.posX += 20;
+					velocity.set(0, 2.0);
 				}
 			}else {
 				this.currentAnimation = this.playerGraphics.getJumpingRight();
 				if(listOfCollisions.get(2)) {
-					velocity.set(0, 0.0);
-					this.posX -= 20;
+					velocity.set(0, -2.0);
 				}
 			}
 			this.setNewPosition();

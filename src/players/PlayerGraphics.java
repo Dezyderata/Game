@@ -13,7 +13,6 @@ final class PlayerGraphics {
 	private Animation jumpAnimation;
 	private Animation jumpingRight;
 	private Animation jumpingLeft;
-//	private Animation fire;
 	
 	PlayerGraphics(int[] spritSheetsSize, List<String> listOfAnimationAndImagesPaths) throws SlickException{
 		this.idleAnimation = new Animation(new SpriteSheet(listOfAnimationAndImagesPaths.get(0), spritSheetsSize[0], spritSheetsSize[1]),100 );

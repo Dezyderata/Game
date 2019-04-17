@@ -11,6 +11,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 
@@ -24,7 +25,6 @@ public class Game extends BasicGame {
 	private PlayersInterface player;
 	private List<Rectangle> listOfObstacles = new ArrayList<>();
 	private List<Boolean> listOfCollisions = new ArrayList<Boolean>(Arrays.asList(new Boolean[5]));
-	boolean collision = false;
 	public Game(String title) {
 		super(title);
 	}
@@ -32,26 +32,24 @@ public class Game extends BasicGame {
 	@Override
 	public void init(GameContainer container) throws SlickException {
 		map = new Map1();
-		this.listOfObstacles = map.getCollisionAreas();
 		player = new Player();
 	}
 	
 	@Override
 	public void render(GameContainer container, Graphics graphic) throws SlickException {
 		map.getBackground().draw();
-		map.getGround();
-		player.getCurrentAnimation().draw(player.getPosX(), player.getPosY());
-		graphic.setColor(Color.blue);
-		
-		graphic.draw(map.getCollisionAreas().get(0));
-		graphic.setColor(Color.red);
-		graphic.draw(map.getCollisionAreas().get(1));
-		graphic.setColor(Color.green);
-		graphic.draw(map.getCollisionAreas().get(2));
-		graphic.setColor(Color.pink);
-		graphic.draw(map.getCollisionAreas().get(3));
-		graphic.draw(player.getListOfCollisionAreas().get(3));
-		
+		if(player.getPosX() < 1900) {
+			map.getGround(1);
+			this.listOfObstacles = map.getCollisionAreas(1);
+			player.getCurrentAnimation().draw(player.getPosX(), player.getPosY());
+		}else {
+			map.getGround(2);
+			this.listOfObstacles = map.getCollisionAreas(2);
+			player.getCurrentAnimation().draw(player.getPosX()-1900, player.getPosY());			
+		}
+		for(Shape s : this.listOfObstacles) {
+			graphic.draw(new Rectangle(s.getX()-1900,s.getY(),s.getWidth(), s.getHeight()));
+		}
 	}
 
 	@Override
