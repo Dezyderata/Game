@@ -22,7 +22,7 @@ public class Map1 implements MapsInterface{
 	private List<Rectangle> getMap1() {
 		collisionsAreasMap1.add(new Rectangle(0, 900, 1900, 100));
 		collisionsAreasMap1.add(new Rectangle(600, 800, 700, 200));
-		collisionsAreasMap1.add(new Rectangle(800, 500, 400, 100));
+		collisionsAreasMap1.add(new Rectangle(800, 500, 300, 100));
 		collisionsAreasMap1.add(new Rectangle(1300, 400, 700, 100));
 		return collisionsAreasMap1;
 	}
@@ -40,7 +40,7 @@ public class Map1 implements MapsInterface{
 					ground.getSubImage(1, 0).drawEmbedded(100*i, 900, 100, 100);
 					ground.getSubImage(5, 0).drawEmbedded(100*i, 800, 100, 100);
 				}
-				if(i >=8 && i <= 11) {
+				if(i >=8 && i <= 10) {
 					ground.getSubImage(5, 0).drawEmbedded(100*i, 500, 100, 100);
 				}
 			}
